@@ -33,8 +33,8 @@ function parseRss(xml: string) {
   for (const block of matches) {
     const title = stripHtml((block.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] ?? "")
       .replace(/<!\[CDATA\[|\]\]>/g, ""));
-    const link = (block.match(/<link[^>]*>([\s\S]*?)<\/link>/)?.[1] ?? "").trim()
-      || block.match(/<link[^>]*href=["']([^"']+)["']/)?.[1] ?? "";
+    const link = ((block.match(/<link[^>]*>([\s\S]*?)<\/link>/)?.[1] ?? "").trim()
+      || (block.match(/<link[^>]*href=["']([^"']+)["']/)?.[1] ?? ""));
     const desc = stripHtml((block.match(/<description[^>]*>([\s\S]*?)<\/description>/)?.[1]
       ?? block.match(/<summary[^>]*>([\s\S]*?)<\/summary>/)?.[1]
       ?? block.match(/<content[^>]*>([\s\S]*?)<\/content>/)?.[1]
