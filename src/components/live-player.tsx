@@ -52,6 +52,15 @@ export function LivePlayer({ episode }: LivePlayerProps) {
           "radial-gradient(circle at 20% 10%, rgba(232,93,58,0.18), transparent 55%), radial-gradient(circle at 90% 90%, rgba(240,160,96,0.10), transparent 55%)",
       }}
     >
+      {hasAudio && episode?.audio_url && (
+        <audio
+          ref={audioRef}
+          src={episode.audio_url}
+          preload="metadata"
+          onTimeUpdate={(e) => setProgress(Math.floor(e.currentTarget.currentTime))}
+          onEnded={() => { setPlaying(false); setProgress(0); }}
+        />
+      )}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
         {/* Album artwork / RJ disc */}
         <div className="relative flex h-44 w-44 shrink-0 items-center justify-center self-center sm:h-52 sm:w-52">
