@@ -1,6 +1,7 @@
-// Fetch news from RSS / NewsAPI / GDELT sources, dedupe, store.
+// Fetch news from RSS / NewsAPI sources, dedupe, store.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { clip, parseRss, sha256, type ParsedItem } from "./parser.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,70 +9,32 @@ const corsHeaders = {
 };
 
 interface FetchBody {
-  source_id?: string; // if omitted, fetch all active sources
+  source_id?: string;
   limit_per_source?: number;
 }
 
-async function sha256(text: string) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function stripHtml(s: string) {
-  return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-function clip(s: string, n = 400) {
-  return s.length > n ? s.slice(0, n - 1) + "…" : s;
-}
-
-// Tiny RSS/Atom parser — extracts title/link/description/pubDate
-function parseRss(xml: string) {
-  const items: { title: string; url: string; summary: string; published_at: string | null }[] = [];
-  const itemRegex = /<(item|entry)[\s\S]*?<\/(item|entry)>/g;
-  const matches = xml.match(itemRegex) ?? [];
-  for (const block of matches) {
-    const title = stripHtml((block.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] ?? "")
-      .replace(/<!\[CDATA\[|\]\]>/g, ""));
-    const link = ((block.match(/<link[^>]*>([\s\S]*?)<\/link>/)?.[1] ?? "").trim()
-      || (block.match(/<link[^>]*href=["']([^"']+)["']/)?.[1] ?? ""));
-    const desc = stripHtml((block.match(/<description[^>]*>([\s\S]*?)<\/description>/)?.[1]
-      ?? block.match(/<summary[^>]*>([\s\S]*?)<\/summary>/)?.[1]
-      ?? block.match(/<content[^>]*>([\s\S]*?)<\/content>/)?.[1]
-      ?? "").replace(/<!\[CDATA\[|\]\]>/g, ""));
-    const pub = (block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/)?.[1]
-      ?? block.match(/<updated[^>]*>([\s\S]*?)<\/updated>/)?.[1]
-      ?? block.match(/<published[^>]*>([\s\S]*?)<\/published>/)?.[1] ?? "").trim();
-    if (title && link) {
-      items.push({
-        title: clip(title, 250),
-        url: link,
-        summary: clip(desc, 600),
-        published_at: pub ? new Date(pub).toISOString() : null,
-      });
-    }
-  }
-  return items;
-}
-
-async function fetchRss(url: string, limit: number) {
+async function fetchRss(url: string, limit: number): Promise<ParsedItem[]> {
   const res = await fetch(url, { headers: { "User-Agent": "TamilAIVanoli/1.0" } });
   if (!res.ok) throw new Error(`RSS ${res.status}`);
   return parseRss(await res.text()).slice(0, limit);
 }
 
-async function fetchNewsApi(apiKey: string, params: { category?: string; city?: string; lang?: string }, limit: number) {
-  const q = encodeURIComponent(params.city ? `${params.city}` : "Tamil Nadu");
+async function fetchNewsApi(
+  apiKey: string,
+  params: { category?: string; city?: string; lang?: string },
+  limit: number,
+): Promise<ParsedItem[]> {
+  const q = encodeURIComponent(params.city ? params.city : "Tamil Nadu");
   const url = `https://newsapi.org/v2/everything?q=${q}&language=${params.lang ?? "en"}&pageSize=${limit}&sortBy=publishedAt&apiKey=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`NewsAPI ${res.status}`);
   const data = await res.json();
-  return (data.articles ?? []).map((a: any) => ({
+  return (data.articles ?? []).map((a: { title?: string; url?: string; description?: string; content?: string; publishedAt?: string }) => ({
     title: clip(a.title ?? "", 250),
-    url: a.url,
+    url: a.url ?? "",
     summary: clip(a.description ?? a.content ?? "", 600),
     published_at: a.publishedAt ?? null,
-  }));
+  })).filter((it: ParsedItem) => it.title && it.url);
 }
 
 serve(async (req) => {
@@ -93,7 +56,7 @@ serve(async (req) => {
     const summary: { source: string; fetched: number; inserted: number; skipped: number; error?: string }[] = [];
 
     for (const src of sources ?? []) {
-      let fetched: { title: string; url: string; summary: string; published_at: string | null }[] = [];
+      let fetched: ParsedItem[] = [];
       try {
         if (src.type === "rss" && src.url) {
           fetched = await fetchRss(src.url, limit);
