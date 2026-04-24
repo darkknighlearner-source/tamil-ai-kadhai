@@ -56,7 +56,14 @@ serve(async (req) => {
   let runId: string | null = null;
   try {
     const body = (await req.json().catch(() => ({}))) as AutoBody;
-    const maxNews = body.max_news ?? 5;
+    const maxNews = body.max_news ?? 3;
+    // Hard cap to stay under the 150s edge function timeout.
+    // Audio (Sarvam TTS) is the slow part — default to skipping it on bulk runs.
+    const skipAudio = body.skip_audio ?? !body.show_id;
+    // Soft deadline: stop starting new work after this many ms.
+    const DEADLINE_MS = 120_000;
+    const startedAt = Date.now();
+    const deadlineHit = () => Date.now() - startedAt > DEADLINE_MS;
 
     // Log run
     const { data: run } = await supabase.from("pipeline_runs").insert({
@@ -88,6 +95,7 @@ serve(async (req) => {
     const errors: string[] = [];
 
     for (const show of shows ?? []) {
+      if (deadlineHit()) { errors.push("deadline reached — remaining shows skipped"); break; }
       const cities = body.city
         ? [body.city]
         : show.city
@@ -95,6 +103,7 @@ serve(async (req) => {
           : ["Chennai"];
 
       for (const city of cities) {
+        if (deadlineHit()) break;
         try {
           // 3. Pick recent unused approved news for this city/category
           const { data: newsItems } = await supabase
@@ -150,8 +159,8 @@ serve(async (req) => {
           episodesCreated++;
           if (requires_approval) pendingApproval++;
 
-          // 7. Generate audio (skip on stories/long content if requested)
-          if (!body.skip_audio && ep) {
+          // 7. Generate audio (skip on bulk runs to avoid 150s timeout)
+          if (!skipAudio && ep && !deadlineHit()) {
             try {
               await callFn(SUPABASE_URL, SERVICE, "generate-audio", { episode_id: ep.id });
               audioGenerated++;
