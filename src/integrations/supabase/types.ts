@@ -305,6 +305,7 @@ export type Database = {
           category: string | null
           city: string | null
           created_at: string
+          credibility_score: number | null
           id: string
           is_active: boolean
           language: string | null
@@ -319,6 +320,7 @@ export type Database = {
           category?: string | null
           city?: string | null
           created_at?: string
+          credibility_score?: number | null
           id?: string
           is_active?: boolean
           language?: string | null
@@ -333,6 +335,7 @@ export type Database = {
           category?: string | null
           city?: string | null
           created_at?: string
+          credibility_score?: number | null
           id?: string
           is_active?: boolean
           language?: string | null
