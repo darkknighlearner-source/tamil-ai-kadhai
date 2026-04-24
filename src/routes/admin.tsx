@@ -35,9 +35,11 @@ function AdminPage() {
           {(
             [
               ["overview", "Overview", Radio],
+              ["sources", "Sources", Rss],
               ["news", "News", Newspaper],
               ["generate", "Generate script", Sparkles],
               ["episodes", "Episodes", FileText],
+              ["voices", "Voices", Mic],
               ["requests", "Requests", Users],
             ] as const
           ).map(([k, label, Icon]) => (
