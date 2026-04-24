@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import type { Episode, NewsItem, ScriptShape, Show, Source, UserRequest } from "@/lib/types";
-import { Sparkles, Plus, FileText, CheckCircle2, XCircle, Clock, Users, Radio, Newspaper } from "lucide-react";
+import type { Episode, NewsItem, ScriptShape, Show, Source, UserRequest, Voice } from "@/lib/types";
+import { Sparkles, Plus, FileText, CheckCircle2, XCircle, Clock, Users, Radio, Newspaper, Rss, Mic, Download, Globe } from "lucide-react";
 import { toast } from "sonner";
+import { invokeFn } from "@/lib/fn";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({ meta: [{ title: "Admin — Tamil AI Vanoli" }] }),
 });
 
-type Tab = "overview" | "news" | "generate" | "episodes" | "requests";
+type Tab = "overview" | "sources" | "news" | "generate" | "episodes" | "voices" | "requests";
 
 function AdminPage() {
   const [tab, setTab] = useState<Tab>("overview");
