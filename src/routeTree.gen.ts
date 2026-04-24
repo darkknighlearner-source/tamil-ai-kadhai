@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShowsShowIdRouteImport } from './routes/shows.$showId'
 import { Route as EpisodesEpisodeIdRouteImport } from './routes/episodes.$episodeId'
+import { Route as ApiPublicHooksAutoPipelineRouteImport } from './routes/api.public.hooks.auto-pipeline'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -52,6 +53,12 @@ const EpisodesEpisodeIdRoute = EpisodesEpisodeIdRouteImport.update({
   path: '/episodes/$episodeId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksAutoPipelineRoute =
+  ApiPublicHooksAutoPipelineRouteImport.update({
+    id: '/api/public/hooks/auto-pipeline',
+    path: '/api/public/hooks/auto-pipeline',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/episodes/$episodeId': typeof EpisodesEpisodeIdRoute
   '/shows/$showId': typeof ShowsShowIdRoute
+  '/api/public/hooks/auto-pipeline': typeof ApiPublicHooksAutoPipelineRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +78,7 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/episodes/$episodeId': typeof EpisodesEpisodeIdRoute
   '/shows/$showId': typeof ShowsShowIdRoute
+  '/api/public/hooks/auto-pipeline': typeof ApiPublicHooksAutoPipelineRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +89,7 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/episodes/$episodeId': typeof EpisodesEpisodeIdRoute
   '/shows/$showId': typeof ShowsShowIdRoute
+  '/api/public/hooks/auto-pipeline': typeof ApiPublicHooksAutoPipelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +101,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/episodes/$episodeId'
     | '/shows/$showId'
+    | '/api/public/hooks/auto-pipeline'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +111,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/episodes/$episodeId'
     | '/shows/$showId'
+    | '/api/public/hooks/auto-pipeline'
   id:
     | '__root__'
     | '/'
@@ -109,6 +121,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/episodes/$episodeId'
     | '/shows/$showId'
+    | '/api/public/hooks/auto-pipeline'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,6 +131,7 @@ export interface RootRouteChildren {
   ShowsRoute: typeof ShowsRouteWithChildren
   SubmitRoute: typeof SubmitRoute
   EpisodesEpisodeIdRoute: typeof EpisodesEpisodeIdRoute
+  ApiPublicHooksAutoPipelineRoute: typeof ApiPublicHooksAutoPipelineRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -171,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EpisodesEpisodeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/auto-pipeline': {
+      id: '/api/public/hooks/auto-pipeline'
+      path: '/api/public/hooks/auto-pipeline'
+      fullPath: '/api/public/hooks/auto-pipeline'
+      preLoaderRoute: typeof ApiPublicHooksAutoPipelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -191,6 +212,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShowsRoute: ShowsRouteWithChildren,
   SubmitRoute: SubmitRoute,
   EpisodesEpisodeIdRoute: EpisodesEpisodeIdRoute,
+  ApiPublicHooksAutoPipelineRoute: ApiPublicHooksAutoPipelineRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
