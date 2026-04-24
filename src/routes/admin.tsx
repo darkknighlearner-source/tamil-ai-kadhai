@@ -82,6 +82,109 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
   );
 }
 
+function RunPipelinePanel() {
+  const [shows, setShows] = useState<Show[]>([]);
+  const [showId, setShowId] = useState<string>("");
+  const [city, setCity] = useState("");
+  const [maxNews, setMaxNews] = useState(5);
+  const [skipAudio, setSkipAudio] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [last, setLast] = useState<{
+    episodes_created?: number;
+    episodes_pending_approval?: number;
+    audio_generated?: number;
+    news_fetched?: number;
+    errors?: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    supabase.from("shows").select("*").eq("is_active", true).order("name").then((r) => {
+      setShows((r.data ?? []) as Show[]);
+    });
+  }, []);
+
+  async function run() {
+    setRunning(true);
+    setLast(null);
+    try {
+      const body: Record<string, unknown> = { max_news: maxNews, skip_audio: skipAudio, triggered_by: "admin" };
+      if (showId) body.show_id = showId;
+      if (city.trim()) body.city = city.trim();
+      const data = await invokeFn<typeof last & { ok?: boolean }>("auto-pipeline", body);
+      setLast(data);
+      const created = data?.episodes_created ?? 0;
+      const pending = data?.episodes_pending_approval ?? 0;
+      toast.success(`Pipeline finished — ${created} episode(s), ${pending} pending approval`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Pipeline run failed");
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-card p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-primary">Automation</div>
+          <h3 className="mt-1 font-serif text-xl">Run auto-pipeline now</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Fetches fresh news → generates Tamil scripts → creates episodes → renders audio.
+            Sensitive categories are queued for approval.
+          </p>
+        </div>
+        <button
+          onClick={run}
+          disabled={running}
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-ember px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow disabled:opacity-50"
+        >
+          <Sparkles className="h-4 w-4" /> {running ? "Running…" : "Run now"}
+        </button>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <Label>Show (optional)</Label>
+          <select className={inputCls} value={showId} onChange={(e) => setShowId(e.target.value)} disabled={running}>
+            <option value="">All active shows</option>
+            {shows.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <Label>City (optional)</Label>
+          <input className={inputCls} placeholder="e.g. Chennai" value={city} onChange={(e) => setCity(e.target.value)} disabled={running} />
+        </div>
+        <div>
+          <Label>Max news per show</Label>
+          <input type="number" min={1} max={20} className={inputCls} value={maxNews} onChange={(e) => setMaxNews(Number(e.target.value) || 5)} disabled={running} />
+        </div>
+        <div className="flex items-end">
+          <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+            <input type="checkbox" checked={skipAudio} onChange={(e) => setSkipAudio(e.target.checked)} disabled={running} />
+            Skip audio generation
+          </label>
+        </div>
+      </div>
+
+      {last && (
+        <div className="mt-4 rounded-xl border border-border/60 bg-surface/60 p-3 text-xs">
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <span><span className="text-muted-foreground">News fetched:</span> <span className="font-medium text-foreground">{last.news_fetched ?? 0}</span></span>
+            <span><span className="text-muted-foreground">Episodes created:</span> <span className="font-medium text-foreground">{last.episodes_created ?? 0}</span></span>
+            <span><span className="text-muted-foreground">Pending approval:</span> <span className="font-medium text-warning">{last.episodes_pending_approval ?? 0}</span></span>
+            <span><span className="text-muted-foreground">Audio generated:</span> <span className="font-medium text-foreground">{last.audio_generated ?? 0}</span></span>
+          </div>
+          {last.errors && last.errors.length > 0 && (
+            <ul className="mt-2 list-disc space-y-0.5 pl-4 text-warning">
+              {last.errors.map((er, i) => <li key={i}>{er}</li>)}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function OverviewTab() {
   const [stats, setStats] = useState({ episodes: 0, published: 0, pending: 0, requests: 0, news: 0, shows: 0 });
   useEffect(() => {
@@ -105,13 +208,16 @@ function OverviewTab() {
     })();
   }, []);
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Stat label="Active shows" value={stats.shows} />
-      <Stat label="Total episodes" value={stats.episodes} />
-      <Stat label="Published" value={stats.published} hint="Live to listeners" />
-      <Stat label="Pending review" value={stats.pending} hint="Awaiting approval" />
-      <Stat label="News items" value={stats.news} />
-      <Stat label="New listener requests" value={stats.requests} />
+    <div className="space-y-6">
+      <RunPipelinePanel />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Stat label="Active shows" value={stats.shows} />
+        <Stat label="Total episodes" value={stats.episodes} />
+        <Stat label="Published" value={stats.published} hint="Live to listeners" />
+        <Stat label="Pending review" value={stats.pending} hint="Awaiting approval" />
+        <Stat label="News items" value={stats.news} />
+        <Stat label="New listener requests" value={stats.requests} />
+      </div>
     </div>
   );
 }
