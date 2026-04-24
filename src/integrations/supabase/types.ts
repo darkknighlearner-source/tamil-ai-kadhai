@@ -27,9 +27,11 @@ export type Database = {
           moderation_notes: string | null
           play_count: number
           published_at: string | null
+          requires_approval: boolean
           scheduled_at: string | null
           script: Json
           script_text: string | null
+          sensitive_category: string | null
           show_id: string
           source_links: Json | null
           status: string
@@ -48,9 +50,11 @@ export type Database = {
           moderation_notes?: string | null
           play_count?: number
           published_at?: string | null
+          requires_approval?: boolean
           scheduled_at?: string | null
           script?: Json
           script_text?: string | null
+          sensitive_category?: string | null
           show_id: string
           source_links?: Json | null
           status?: string
@@ -69,9 +73,11 @@ export type Database = {
           moderation_notes?: string | null
           play_count?: number
           published_at?: string | null
+          requires_approval?: boolean
           scheduled_at?: string | null
           script?: Json
           script_text?: string | null
+          sensitive_category?: string | null
           show_id?: string
           source_links?: Json | null
           status?: string
@@ -187,6 +193,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pipeline_runs: {
+        Row: {
+          audio_generated: number
+          city: string | null
+          episodes_created: number
+          episodes_pending_approval: number
+          error: string | null
+          finished_at: string | null
+          id: string
+          news_fetched: number
+          show_id: string | null
+          started_at: string
+          status: string
+          triggered_by: string
+        }
+        Insert: {
+          audio_generated?: number
+          city?: string | null
+          episodes_created?: number
+          episodes_pending_approval?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          news_fetched?: number
+          show_id?: string | null
+          started_at?: string
+          status?: string
+          triggered_by?: string
+        }
+        Update: {
+          audio_generated?: number
+          city?: string | null
+          episodes_created?: number
+          episodes_pending_approval?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          news_fetched?: number
+          show_id?: string | null
+          started_at?: string
+          status?: string
+          triggered_by?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
