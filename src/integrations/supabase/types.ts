@@ -29,6 +29,7 @@ export type Database = {
           published_at: string | null
           scheduled_at: string | null
           script: Json
+          script_text: string | null
           show_id: string
           source_links: Json | null
           status: string
@@ -49,6 +50,7 @@ export type Database = {
           published_at?: string | null
           scheduled_at?: string | null
           script?: Json
+          script_text?: string | null
           show_id: string
           source_links?: Json | null
           status?: string
@@ -69,6 +71,7 @@ export type Database = {
           published_at?: string | null
           scheduled_at?: string | null
           script?: Json
+          script_text?: string | null
           show_id?: string
           source_links?: Json | null
           status?: string
@@ -131,10 +134,12 @@ export type Database = {
           created_at: string
           credibility_score: number | null
           duplicate_group_id: string | null
+          duplicate_hash: string | null
           fetched_at: string
           id: string
           published_at: string | null
           source_id: string | null
+          status: string
           summary: string | null
           title: string
           url: string | null
@@ -146,10 +151,12 @@ export type Database = {
           created_at?: string
           credibility_score?: number | null
           duplicate_group_id?: string | null
+          duplicate_hash?: string | null
           fetched_at?: string
           id?: string
           published_at?: string | null
           source_id?: string | null
+          status?: string
           summary?: string | null
           title: string
           url?: string | null
@@ -161,10 +168,12 @@ export type Database = {
           created_at?: string
           credibility_score?: number | null
           duplicate_group_id?: string | null
+          duplicate_hash?: string | null
           fetched_at?: string
           id?: string
           published_at?: string | null
           source_id?: string | null
+          status?: string
           summary?: string | null
           title?: string
           url?: string | null
@@ -291,9 +300,12 @@ export type Database = {
       }
       sources: {
         Row: {
+          api_provider: string | null
+          approved_domain_only: boolean
           category: string | null
           city: string | null
           created_at: string
+          credibility_score: number | null
           id: string
           is_active: boolean
           language: string | null
@@ -303,9 +315,12 @@ export type Database = {
           url: string | null
         }
         Insert: {
+          api_provider?: string | null
+          approved_domain_only?: boolean
           category?: string | null
           city?: string | null
           created_at?: string
+          credibility_score?: number | null
           id?: string
           is_active?: boolean
           language?: string | null
@@ -315,9 +330,12 @@ export type Database = {
           url?: string | null
         }
         Update: {
+          api_provider?: string | null
+          approved_domain_only?: boolean
           category?: string | null
           city?: string | null
           created_at?: string
+          credibility_score?: number | null
           id?: string
           is_active?: boolean
           language?: string | null
@@ -384,10 +402,13 @@ export type Database = {
           character_name: string
           created_at: string
           id: string
+          is_active: boolean
           language: string | null
           pitch: number | null
           provider: string
+          speaker: string | null
           speed: number | null
+          target_language_code: string | null
           tone: string | null
           voice_id: string | null
         }
@@ -395,10 +416,13 @@ export type Database = {
           character_name: string
           created_at?: string
           id?: string
+          is_active?: boolean
           language?: string | null
           pitch?: number | null
           provider?: string
+          speaker?: string | null
           speed?: number | null
+          target_language_code?: string | null
           tone?: string | null
           voice_id?: string | null
         }
@@ -406,10 +430,13 @@ export type Database = {
           character_name?: string
           created_at?: string
           id?: string
+          is_active?: boolean
           language?: string | null
           pitch?: number | null
           provider?: string
+          speaker?: string | null
           speed?: number | null
+          target_language_code?: string | null
           tone?: string | null
           voice_id?: string | null
         }

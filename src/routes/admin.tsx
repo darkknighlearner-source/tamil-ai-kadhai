@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import type { Episode, NewsItem, ScriptShape, Show, Source, UserRequest } from "@/lib/types";
-import { Sparkles, Plus, FileText, CheckCircle2, XCircle, Clock, Users, Radio, Newspaper } from "lucide-react";
+import type { Episode, NewsItem, ScriptShape, Show, Source, UserRequest, Voice } from "@/lib/types";
+import { Sparkles, Plus, FileText, CheckCircle2, XCircle, Clock, Users, Radio, Newspaper, Rss, Mic, Download, Globe } from "lucide-react";
 import { toast } from "sonner";
+import { invokeFn } from "@/lib/fn";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
   head: () => ({ meta: [{ title: "Admin — Tamil AI Vanoli" }] }),
 });
 
-type Tab = "overview" | "news" | "generate" | "episodes" | "requests";
+type Tab = "overview" | "sources" | "news" | "generate" | "episodes" | "voices" | "requests";
 
 function AdminPage() {
   const [tab, setTab] = useState<Tab>("overview");
@@ -34,9 +35,11 @@ function AdminPage() {
           {(
             [
               ["overview", "Overview", Radio],
+              ["sources", "Sources", Rss],
               ["news", "News", Newspaper],
               ["generate", "Generate script", Sparkles],
               ["episodes", "Episodes", FileText],
+              ["voices", "Voices", Mic],
               ["requests", "Requests", Users],
             ] as const
           ).map(([k, label, Icon]) => (
@@ -56,9 +59,11 @@ function AdminPage() {
 
         <div className="mt-6">
           {tab === "overview" && <OverviewTab />}
+          {tab === "sources" && <SourcesTab />}
           {tab === "news" && <NewsTab />}
           {tab === "generate" && <GenerateTab />}
           {tab === "episodes" && <EpisodesTab />}
+          {tab === "voices" && <VoicesTab />}
           {tab === "requests" && <RequestsTab />}
         </div>
       </main>
@@ -373,6 +378,17 @@ function EpisodesTab() {
     refresh();
   }
 
+  const [genAudio, setGenAudio] = useState<string | null>(null);
+  async function genAudioFor(id: string) {
+    setGenAudio(id);
+    try {
+      await invokeFn("generate-audio", { episode_id: id });
+      toast.success("Sarvam audio generated");
+      refresh();
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Audio failed"); }
+    finally { setGenAudio(null); }
+  }
+
   return (
     <div className="space-y-2.5">
       {eps.length === 0 && <div className="rounded-xl border border-dashed border-border/60 p-10 text-center text-sm text-muted-foreground">No episodes yet.</div>}
@@ -381,12 +397,157 @@ function EpisodesTab() {
           <div className="min-w-0 flex-1">
             <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{e.shows?.name ?? "—"} · {e.city ?? "all"}</div>
             <div className="mt-0.5 truncate font-medium">{e.title}</div>
+            {e.audio_url && <audio src={e.audio_url} controls className="mt-2 h-8 w-full max-w-md" />}
           </div>
           <span className={`rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] ${statusColor(e.status)}`}>{e.status}</span>
           <div className="flex gap-1.5">
+            <button disabled={genAudio === e.id} onClick={() => genAudioFor(e.id)} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent disabled:opacity-50">
+              <Mic className="h-3 w-3" /> {genAudio === e.id ? "Generating…" : e.audio_url ? "Regen audio" : "Gen audio"}
+            </button>
             {e.status !== "published" && <button onClick={() => setStatus(e.id, "published")} className="rounded-full bg-gradient-ember px-3 py-1.5 text-xs font-medium text-primary-foreground">Publish</button>}
             {e.status !== "rejected" && <button onClick={() => setStatus(e.id, "rejected")} className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent">Reject</button>}
           </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SourcesTab() {
+  const [items, setItems] = useState<Source[]>([]);
+  const [form, setForm] = useState({ name: "", type: "rss", url: "", api_provider: "", category: "general", city: "", language: "ta", credibility_score: 0.85, approved_domain_only: true });
+  const [fetching, setFetching] = useState<string | null>(null);
+  const [extractUrl, setExtractUrl] = useState("");
+  const [extractingFor, setExtractingFor] = useState<string | null>(null);
+
+  async function refresh() {
+    const r = await supabase.from("sources").select("*").order("name");
+    setItems((r.data ?? []) as Source[]);
+  }
+  useEffect(() => { refresh(); }, []);
+
+  async function add() {
+    if (!form.name.trim()) return toast.error("Name required");
+    const { error } = await supabase.from("sources").insert({
+      name: form.name.trim(), type: form.type, url: form.url.trim() || null,
+      api_provider: form.api_provider || null, category: form.category, city: form.city || null,
+      language: form.language, credibility_score: form.credibility_score, approved_domain_only: form.approved_domain_only,
+      is_active: true,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Source added");
+    setForm({ ...form, name: "", url: "", api_provider: "" });
+    refresh();
+  }
+
+  async function fetchNow(id: string) {
+    setFetching(id);
+    try {
+      const r = await invokeFn<{ summary: { source: string; inserted: number; skipped: number; error?: string }[] }>("fetch-news", { source_id: id, limit_per_source: 15 });
+      const s = r.summary?.[0];
+      if (s?.error) toast.error(`${s.source}: ${s.error}`);
+      else toast.success(`${s?.source}: +${s?.inserted ?? 0} new, ${s?.skipped ?? 0} dup`);
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Fetch failed"); }
+    finally { setFetching(null); }
+  }
+
+  async function extract(id: string) {
+    if (!extractUrl.trim()) return toast.error("Enter a URL");
+    setExtractingFor(id);
+    try {
+      await invokeFn("extract-firecrawl", { url: extractUrl.trim(), source_id: id });
+      toast.success("Page extracted to news items");
+      setExtractUrl("");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Extract failed"); }
+    finally { setExtractingFor(null); }
+  }
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+      <div className="rounded-2xl border border-border/60 bg-card p-5">
+        <h3 className="font-serif text-xl">Add news source</h3>
+        <p className="mt-1 text-xs text-muted-foreground">RSS, NewsAPI, Firecrawl approved-domain, or manual.</p>
+        <div className="mt-4 space-y-3">
+          <input className={inputCls} placeholder="Source name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+            <option value="rss">RSS feed</option>
+            <option value="api">API (NewsAPI/GDELT)</option>
+            <option value="firecrawl">Firecrawl (approved domain)</option>
+            <option value="manual">Manual entry</option>
+          </select>
+          <input className={inputCls} placeholder="URL or feed URL" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+          {form.type === "api" && (
+            <input className={inputCls} placeholder="API provider (newsapi / gdelt)" value={form.api_provider} onChange={(e) => setForm({ ...form, api_provider: e.target.value })} />
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            <input className={inputCls} placeholder="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+            <input className={inputCls} placeholder="City (optional)" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+          </div>
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <input type="checkbox" checked={form.approved_domain_only} onChange={(e) => setForm({ ...form, approved_domain_only: e.target.checked })} />
+            Restrict Firecrawl to this approved domain
+          </label>
+          <button onClick={add} className="inline-flex items-center gap-1.5 rounded-full bg-gradient-ember px-4 py-2 text-sm font-medium text-primary-foreground shadow-glow">
+            <Plus className="h-3.5 w-3.5" /> Add source
+          </button>
+        </div>
+      </div>
+      <div>
+        <h3 className="font-serif text-xl">Active sources</h3>
+        <div className="mt-3 space-y-2">
+          {items.map((s) => (
+            <div key={s.id} className="rounded-xl border border-border/60 bg-card p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{s.type} · {s.category ?? "—"} · {s.city ?? "all"}</div>
+                  <div className="mt-0.5 truncate font-medium">{s.name}</div>
+                  {s.url && <div className="mt-0.5 truncate text-xs text-muted-foreground">{s.url}</div>}
+                </div>
+                <div className="flex gap-1.5">
+                  {(s.type === "rss" || s.type === "api") && (
+                    <button onClick={() => fetchNow(s.id)} disabled={fetching === s.id} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent disabled:opacity-50">
+                      <Download className="h-3 w-3" /> {fetching === s.id ? "Fetching…" : "Fetch now"}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {s.type === "firecrawl" && (
+                <div className="mt-3 flex gap-2">
+                  <input className={inputCls} placeholder={`Extract URL within ${s.url ?? "domain"}…`} value={extractingFor === s.id ? extractUrl : ""} onChange={(e) => { setExtractingFor(s.id); setExtractUrl(e.target.value); }} />
+                  <button onClick={() => extract(s.id)} disabled={extractingFor !== s.id || !extractUrl.trim()} className="inline-flex items-center gap-1 rounded-full bg-gradient-ember px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50">
+                    <Globe className="h-3 w-3" /> Extract
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VoicesTab() {
+  const [items, setItems] = useState<Voice[]>([]);
+  useEffect(() => { supabase.from("voices").select("*").order("character_name").then((r) => setItems((r.data ?? []) as Voice[])); }, []);
+  async function update(id: string, patch: Partial<Voice>) {
+    const { error } = await supabase.from("voices").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Voice updated");
+  }
+  return (
+    <div className="space-y-2.5">
+      <p className="text-xs text-muted-foreground">Map each RJ character to a Sarvam speaker. Edit and tab out to save.</p>
+      {items.map((v) => (
+        <div key={v.id} className="grid gap-2 rounded-xl border border-border/60 bg-card p-4 sm:grid-cols-[1.5fr_1fr_1fr_80px_80px]">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Character</div>
+            <div className="font-medium">{v.character_name}</div>
+          </div>
+          <input className={inputCls} defaultValue={v.speaker ?? ""} onBlur={(e) => update(v.id, { speaker: e.target.value })} placeholder="Sarvam speaker" />
+          <input className={inputCls} defaultValue={v.target_language_code ?? "ta-IN"} onBlur={(e) => update(v.id, { target_language_code: e.target.value })} placeholder="ta-IN" />
+          <input className={inputCls} type="number" step="0.05" defaultValue={v.speed ?? 1.0} onBlur={(e) => update(v.id, { speed: Number(e.target.value) })} />
+          <input className={inputCls} type="number" step="0.05" defaultValue={v.pitch ?? 0} onBlur={(e) => update(v.id, { pitch: Number(e.target.value) })} />
         </div>
       ))}
     </div>

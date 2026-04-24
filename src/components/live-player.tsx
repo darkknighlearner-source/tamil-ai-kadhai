@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, Pause, SkipForward, Heart, Share2, Volume2 } from "lucide-react";
 import { Waveform } from "./waveform";
 import type { EpisodeWithShow } from "@/lib/types";
@@ -11,9 +11,26 @@ interface LivePlayerProps {
 export function LivePlayer({ episode }: LivePlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasAudio = Boolean(episode?.audio_url);
 
+  // Reset on episode change
   useEffect(() => {
-    if (!playing || !episode) return;
+    setProgress(0);
+    setPlaying(false);
+  }, [episode?.id]);
+
+  // Real audio control
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a || !hasAudio) return;
+    if (playing) a.play().catch(() => setPlaying(false));
+    else a.pause();
+  }, [playing, hasAudio]);
+
+  // Mock progress for episodes without audio
+  useEffect(() => {
+    if (!playing || !episode || hasAudio) return;
     const total = episode.duration_seconds ?? 600;
     const t = setInterval(() => {
       setProgress((p) => {
@@ -22,7 +39,7 @@ export function LivePlayer({ episode }: LivePlayerProps) {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [playing, episode]);
+  }, [playing, episode, hasAudio]);
 
   const total = episode?.duration_seconds ?? 600;
   const accent = (episode?.shows?.accent_color as string | undefined) ?? "#e85d3a";
@@ -35,6 +52,15 @@ export function LivePlayer({ episode }: LivePlayerProps) {
           "radial-gradient(circle at 20% 10%, rgba(232,93,58,0.18), transparent 55%), radial-gradient(circle at 90% 90%, rgba(240,160,96,0.10), transparent 55%)",
       }}
     >
+      {hasAudio && episode?.audio_url && (
+        <audio
+          ref={audioRef}
+          src={episode.audio_url}
+          preload="metadata"
+          onTimeUpdate={(e) => setProgress(Math.floor(e.currentTarget.currentTime))}
+          onEnded={() => { setPlaying(false); setProgress(0); }}
+        />
+      )}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
         {/* Album artwork / RJ disc */}
         <div className="relative flex h-44 w-44 shrink-0 items-center justify-center self-center sm:h-52 sm:w-52">
