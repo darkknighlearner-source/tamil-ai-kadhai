@@ -59,9 +59,11 @@ function AdminPage() {
 
         <div className="mt-6">
           {tab === "overview" && <OverviewTab />}
+          {tab === "sources" && <SourcesTab />}
           {tab === "news" && <NewsTab />}
           {tab === "generate" && <GenerateTab />}
           {tab === "episodes" && <EpisodesTab />}
+          {tab === "voices" && <VoicesTab />}
           {tab === "requests" && <RequestsTab />}
         </div>
       </main>
