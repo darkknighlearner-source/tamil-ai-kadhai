@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, Pause, SkipForward, Heart, Share2, Volume2 } from "lucide-react";
 import { Waveform } from "./waveform";
 import type { EpisodeWithShow } from "@/lib/types";
@@ -11,9 +11,26 @@ interface LivePlayerProps {
 export function LivePlayer({ episode }: LivePlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasAudio = Boolean(episode?.audio_url);
 
+  // Reset on episode change
   useEffect(() => {
-    if (!playing || !episode) return;
+    setProgress(0);
+    setPlaying(false);
+  }, [episode?.id]);
+
+  // Real audio control
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a || !hasAudio) return;
+    if (playing) a.play().catch(() => setPlaying(false));
+    else a.pause();
+  }, [playing, hasAudio]);
+
+  // Mock progress for episodes without audio
+  useEffect(() => {
+    if (!playing || !episode || hasAudio) return;
     const total = episode.duration_seconds ?? 600;
     const t = setInterval(() => {
       setProgress((p) => {
@@ -22,7 +39,7 @@ export function LivePlayer({ episode }: LivePlayerProps) {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [playing, episode]);
+  }, [playing, episode, hasAudio]);
 
   const total = episode?.duration_seconds ?? 600;
   const accent = (episode?.shows?.accent_color as string | undefined) ?? "#e85d3a";
