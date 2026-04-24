@@ -208,13 +208,16 @@ function OverviewTab() {
     })();
   }, []);
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Stat label="Active shows" value={stats.shows} />
-      <Stat label="Total episodes" value={stats.episodes} />
-      <Stat label="Published" value={stats.published} hint="Live to listeners" />
-      <Stat label="Pending review" value={stats.pending} hint="Awaiting approval" />
-      <Stat label="News items" value={stats.news} />
-      <Stat label="New listener requests" value={stats.requests} />
+    <div className="space-y-6">
+      <RunPipelinePanel />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Stat label="Active shows" value={stats.shows} />
+        <Stat label="Total episodes" value={stats.episodes} />
+        <Stat label="Published" value={stats.published} hint="Live to listeners" />
+        <Stat label="Pending review" value={stats.pending} hint="Awaiting approval" />
+        <Stat label="News items" value={stats.news} />
+        <Stat label="New listener requests" value={stats.requests} />
+      </div>
     </div>
   );
 }
