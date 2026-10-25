@@ -3,7 +3,7 @@ flowchart TD
   B --> C[Fetch RSS and configured NewsAPI]
   M[Manual news entry] --> D[News items]
   F[Manual Firecrawl extraction] --> D
-  C --> H[URL hash deduplication and source score]
+  C --> H[Title and URL hash - configured source score]
   H --> D
   D --> E[Recent news selection for show and city]
   E --> G[Generate original Tamil RJ script]

@@ -1,558 +1,117 @@
-# Tamil AI Kadhai
-
-Build a production-ready AI-powered Tamil Internet Radio / AI FM web app.
-
-App name: Tamil AI Vanoli
-
-Goal: Create an AI-powered radio platform that automatically generates and plays Tamil RJ-style shows using real news, public updates, cinema topics, local city updates, user questions, and AI-generated comedy conversations.
-
-IMPORTANT LEGAL RULES:
-
-- Do not copy Suryan FM, Chinna Thambi Periya Thambi, Degree Kaapi, or any existing radio show names, voices, scripts, jingles, or brand style.
-
-- Create original AI show formats inspired by general radio concepts only.
-
-- Do not store or republish full copyrighted news articles.
-
-- Store only source title, short summary, URL, published date, source name, category, and AI-generated original script.
-
-- Always show source links for news-based segments.
-
-- Add a clear label: “AI-generated radio content based on public sources and verified inputs.”
-
-- Add admin approval before publishing political, crime, religion, caste, finance, health, legal, or emergency-related content.
-
-CORE MODULES:
-
-1. Listener App
-
-Create a premium responsive web app with:
-
-- Live AI Radio player
-
-- Show schedule
-
-- Now playing card
-
-- AI RJ profile
-
-- Category channels:
-
-  - Morning News Comedy
-
-  - Two-Character Comedy Talk
-
-  - Cinema Talk
-
-  - Local City Updates
-
-  - Motivation
-
-  - Night Stories
-
-  - Kids Stories
-
-- City selector: Chennai, Salem, Coimbatore, Madurai, Trichy, Tiruppur
-
-- Language selector: Tamil first, later English/Hindi
-
-- User can submit topic/request/question
-
-- User can like, share, save, and replay segments
-
-- Display news source links below each factual segment
-
-2. Admin Dashboard
-
-Create admin dashboard with:
-
-- News source management
-
-- RSS/API source configuration
-
-- Manual news input
-
-- Show creation
-
-- AI script generation
-
-- AI voice generation status
-
-- Audio episode library
-
-- Approval workflow
-
-- Content moderation queue
-
-- Schedule calendar
-
-- Analytics:
-
-  - listeners
-
-  - play count
-
-  - completion rate
-
-  - popular city
-
-  - popular show
-
-  - user requests
-
-  - flagged content
-
-3. News Source Engine
-
-Create backend tables and logic for:
-
-- sources
-
-- news_items
-
-- generated_scripts
-
-- shows
-
-- episodes
-
-- voices
-
-- schedules
-
-- user_requests
-
-- moderation_flags
-
-News source types:
-
-- RSS
-
-- API
-
-- Manual Entry
-
-Default source examples:
-
-- PIB RSS
-
-- NewsOnAir / AIR news
-
-- India.gov.in PIB news
-
-- NDMA/SACHET public alerts
-
-- NewsAPI configurable
-
-- GDELT configurable
-
-For MVP, if external API keys are not available, create a mock fetch system with sample data and make it easy to replace with real API later.
-
-4. AI Script Generator
-
-Create a script generation system with these show formats:
-
-SHOW A: “Kaapi Kadhai”
-
-Morning current affairs + fun Tamil talk.
-
-Structure:
-
-- Opening jingle line
-
-- Good morning greeting
-
-- 3 important headlines
-
-- One local update
-
-- One light comedy observation
-
-- One useful fact
-
-- One motivational closing
-
-- Song intro placeholder
-
-SHOW B: “Rendu Peru Radio”
-
-Two-character comedy conversation.
-
-Characters:
-
-- Kutty: curious, innocent, funny, asks relatable questions
-
-- Periya: witty, mature, sarcastic but respectful, explains the topic
-
-Structure:
-
-- Topic intro
-
-- Back-and-forth comedy conversation
-
-- Factual explanation
-
-- Local Tamil slang
-
-- Clean humor
-
-- No insults, caste, religion, politics attack, body shaming, or adult content
-
-- End with punchline and source mention
-
-SHOW C: “Cinema Sandhai”
-
-Cinema news and entertainment talk.
-
-Structure:
-
-- Trending movie update
-
-- Actor/industry update
-
-- Audience question
-
-- Fun poll
-
-- Song intro placeholder
-
-SHOW D: “Ooru Update”
-
-City-based local updates.
-
-Structure:
-
-- City greeting
-
-- Weather/public alert if available
-
-- Local event
-
-- Traffic/travel note
-
-- Business/shop/community spotlight
-
-- Closing line
-
-5. AI Prompt Template
-
-Use this internal AI prompt when generating every script:
-
-“You are an original Tamil AI radio scriptwriter. Create a fresh Tamil RJ script based only on the provided source summaries and approved admin notes. Do not copy the source wording. Do not invent facts. If a fact is uncertain, say it is unconfirmed or skip it. Keep the tone natural, local, funny, and radio-friendly. Use conversational Tamil. For serious news, stay respectful and neutral. For comedy, use clean humor only. Include source attribution at the end of factual segments. Output in this format:
-
-- show_title
-
-- episode_title
-
-- language
-
-- city
-
-- duration_estimate
-
-- characters
-
-- script_lines with speaker names
-
-- source_references
-
-- moderation_notes
-
-- voice_direction”
-
-6. Voice and Audio
-
-Add placeholders for integrating:
-
-- ElevenLabs
-
-- PlayHT
-
-- Azure TTS
-
-- Google Cloud TTS
-
-- OpenAI TTS
-
-Features:
-
-- Select voice per AI RJ character
-
-- Voice speed, pitch, emotion
-
-- Background music bed
-
-- Intro/outro jingle upload
-
-- Sound effects for comedy
-
-- Export episode as MP3
-
-- Stream episode in web player
-
-7. Scheduling
-
-Create schedule system:
-
-- Daily morning show at 7 AM
-
-- Comedy show at 10 AM
-
-- Cinema show at 5 PM
-
-- Night story at 9 PM
-
-- Admin can edit schedule
-
-- Auto-generate draft episode before publishing
-
-- Admin approval required before going live
-
-8. Safety and Moderation
-
-Add moderation rules:
-
-- No defamatory content
-
-- No fake news
-
-- No political bias
-
-- No hate speech
-
-- No caste/religion jokes
-
-- No copied copyrighted article text
-
-- No medical/legal/financial advice without disclaimer
-
-- Emergency alerts must be factual and sourced
-
-- Serious news should not be turned into comedy
-
-9. UI Design
-
-Design should feel like a premium Tamil audio startup:
-
-- Dark modern radio dashboard
-
-- Warm Tamil cultural accent colors
-
-- Big live player
-
-- Animated audio waveform
-
-- RJ character cards
-
-- Show cards with cinematic thumbnails
-
-- Mobile-first design
-
-- Android WebView ready
-
-- Smooth transitions
-
-- Premium non-generic UI
-
-10. Database Schema
-
-Create tables:
-
-sources:
-
-- id
-
-- name
-
-- type
-
-- url
-
-- category
-
-- language
-
-- city
-
-- is_active
-
-news_items:
-
-- id
-
-- source_id
-
-- title
-
-- summary
-
-- url
-
-- category
-
-- city
-
-- published_at
-
-- fetched_at
-
-- credibility_score
-
-- duplicate_group_id
-
-shows:
-
-- id
-
-- name
-
-- format_type
-
-- description
-
-- language
-
-- city
-
-- default_duration
-
-- is_active
-
-episodes:
-
-- id
-
-- show_id
-
-- title
-
-- script
-
-- audio_url
-
-- status: draft, pending_review, approved, published, rejected
-
-- scheduled_at
-
-- published_at
-
-- source_links
-
-- moderation_notes
-
-voices:
-
-- id
-
-- character_name
-
-- provider
-
-- voice_id
-
-- language
-
-- tone
-
-- speed
-
-- pitch
-
-user_requests:
-
-- id
-
-- user_name
-
-- city
-
-- request_text
-
-- status
-
-- created_at
-
-moderation_flags:
-
-- id
-
-- episode_id
-
-- flag_type
-
-- severity
-
-- reason
-
-- resolved
-
-11. MVP Requirements
-
-Build the first working MVP with:
-
-- Listener homepage
-
-- Live player UI
-
-- Show cards
-
-- Admin dashboard
-
-- Add news manually
-
-- Generate AI script button
-
-- Review and approve script
-
-- Publish episode
-
-- Mock audio player
-
-- Source references shown below episode
-
-- Mobile responsive layout
-
-12. Future-ready Requirements
-
-Keep architecture ready for:
-
-- Real RSS fetching
-
-- NewsAPI integration
-
-- GDELT integration
-
-- TTS voice generation
-
-- MP3 rendering
-
-- Android WebView app
-
-- Push notifications
-
-- Subscription/sponsor ads
-
-- City-based AI radio channels
-
-Create the full app with clean code, reusable components, secure environment variable handling, and beautiful production-grade UI.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d76d9f66-ac84-4e35-9ec1-0e89fae659a9).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+# Tamil AI Vanoli
+
+Original AI-powered Tamil internet radio with a listener experience and a news-to-audio studio.
+
+> **Status: MVP foundations, not production-ready.** Real news, AI script and speech integrations exist. Authorization, approval handling, audio assembly and reliable scheduling still need work. This README describes checked-in code, not certified hosted behavior.
+
+## Documentation
+
+- [Progress and release gaps](docs/PROGRESS.md)
+- [Operating flows](docs/FLOWS.md)
+- [Current pipeline](docs/diagrams/current-pipeline.mmd)
+- [Target release flow](docs/diagrams/target-release-flow.mmd)
+
+## Implemented scope
+
+| Area | Present | Limitation |
+| --- | --- | --- |
+| Listener | Home, shows, city selection, replay, scripts, source links, requests | Latest episode, not continuous live broadcast; absent audio means silent mock progress |
+| Studio | Sources, manual news, script previews, episode controls, voices, manual pipeline run | No complete sign-in gate, dedicated approval queue, show editor or schedule editor |
+| Collection | RSS/Atom, NewsAPI, manual Firecrawl extraction | No GDELT or automatic Firecrawl stage |
+| Scripts | Lovable AI generation, seven original show formats | No independent JSON, fact or citation validation |
+| Speech | Sarvam bulbul:v2 and WAV storage | Raw byte concatenation, not validated media mixing |
+| Automation | Pipeline function, run logs, secret-protected hook | No cron job definition in migrations; stored show times are not consumed |
+| Safety | Disclosure, source links, sensitive-category flags, episode read policies | Manual generation and approval handling have enforcement gaps |
+
+## Architecture
+
+Frontend: TanStack Start / Router, React 19, TypeScript, Tailwind CSS 4 and Sonner. Backend: Lovable Cloud database, authentication and audio storage. Existing integrations are under `supabase/functions/`; browser calls use `src/lib/fn.ts`. A TanStack server route forwards trusted cron requests.
+
+```mermaid
+flowchart LR
+  Listener[Listener pages] --> DB[Lovable Cloud database]
+  Admin[Studio pages] --> DB
+  Admin --> Functions[Existing pipeline functions]
+  Functions --> Sources[RSS - NewsAPI - Firecrawl]
+  Functions --> AI[Lovable AI scripts]
+  Functions --> TTS[Sarvam speech]
+  TTS --> Storage[Audio storage]
+  Storage --> Listener
+  Cron[Trusted scheduler] --> Hook[Secret-protected hook]
+  Hook --> Functions
+```
+
+This describes the current architecture. Future internal backend additions should follow the project's TanStack server-function conventions rather than adding legacy function endpoints.
+
+## Pages
+
+| Address | Purpose |
+| --- | --- |
+| `/` | Latest episode player and channels |
+| `/shows`, `/shows/$showId` | Shows and published episodes |
+| `/episodes/$episodeId` | Replay, script and source links |
+| `/schedule` | Stored show timings, displayed as IST |
+| `/submit` | Listener request form |
+| `/admin` | Studio and manual automation controls |
+| `/api/public/hooks/auto-pipeline` | POST cron hook requiring `x-cron-secret` |
+
+## Local development
+
+Install Bun and Deno; Deno runs the pure parser tests.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
+
+# No network or provider credentials needed for these tests
+deno test supabase/functions/fetch-news/parser_test.ts
+
+bun run lint
+bun run build
 ```
+
+Use Vite's printed address. The Lovable workspace already runs its preview on port 8080. There is no package test script or checked-in deployment test gate. Add the parser command to CI before deploying. **Local result on 2026-10-25: 10 passed, 0 failed.**
+
+## Configuration
+
+Keep private credentials in managed secrets, never in source or shared documents.
+
+| Setting | Purpose |
+| --- | --- |
+| Generated public browser configuration | Managed Lovable Cloud connection; do not edit generated files |
+| `LOVABLE_API_KEY` | Existing script and Firecrawl gateway calls |
+| `SARVAM_API_KEY` | Sarvam speech |
+| `NEWSAPI_KEY` | Optional NewsAPI collection |
+| `FIRECRAWL_API_KEY` | Existing public extraction integration |
+| `CRON_SECRET` | Trusted cron caller authentication |
+
+The current hook also expects backend URL and privileged-key server environment variables. Their availability is unverified; privileged credentials are not user-accessible on Lovable Cloud. This is a release integration gap, not a request to fetch keys manually.
+
+Provider balances, hosted schema, deployed endpoint configuration and active cron jobs were not checked in this documentation task.
+
+## Data
+
+Core tables: `sources`, `news_items`, `shows`, `episodes`, `voices`, `schedules`, `user_requests`, `moderation_flags`, `profiles`, `user_roles`, `pipeline_runs`. Scripts are stored on episodes; there is no separate generated-script persistence module.
+
+Migrations include schema, policies, audio storage, approval flags and cron extensions. Fresh-install drift remains in source credibility/type fields and voice pace queries; see the progress report before a clean deployment.
+
+## Editorial requirements
+
+- Original names, voices, scripts and jingles only; do not imitate existing FM brands or personalities.
+- Store titles, short summaries, metadata, URLs and original scripts, not full articles.
+- Display source links for factual episodes.
+- Required label: **“AI-generated radio content based on public sources and verified inputs.”**
+- Political, crime, religion, caste, health, legal, finance, emergency and other sensitive content needs explicit admin approval.
+- No hate speech, defamation, fake claims, caste/religion jokes or comedy treatment of serious news.
+- Public extraction must not bypass paywalls, login barriers or site restrictions.
+
+These are requirements, not a claim of complete enforcement.
+
+## Before production release
+
+1. Secure privileged endpoints and add real admin session/role checks.
+2. Repair manual and automated approval paths; keep review audio private.
+3. Reconcile migrations and validate model outputs and factual references.
+4. Replace byte concatenation with tested audio assembly.
+5. Add queued execution, bounded requests, retries, idempotency and persisted cron provisioning.
+6. Verify generation → review → publish → audible listener replay end-to-end.
