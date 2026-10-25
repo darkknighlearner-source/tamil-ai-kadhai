@@ -9,28 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SubmitRouteImport } from './routes/submit'
-import { Route as ShowsRouteImport } from './routes/shows'
-import { Route as ScheduleRouteImport } from './routes/schedule'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ShowsShowIdRouteImport } from './routes/shows.$showId'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as ShowsRouteImport } from './routes/shows'
+import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as EpisodesEpisodeIdRouteImport } from './routes/episodes.$episodeId'
+import { Route as ShowsShowIdRouteImport } from './routes/shows.$showId'
 import { Route as ApiPublicHooksAutoPipelineRouteImport } from './routes/api.public.hooks.auto-pipeline'
 
-const SubmitRoute = SubmitRouteImport.update({
-  id: '/submit',
-  path: '/submit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShowsRoute = ShowsRouteImport.update({
-  id: '/shows',
-  path: '/shows',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScheduleRoute = ScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -38,20 +28,30 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ScheduleRoute = ScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShowsRoute = ShowsRouteImport.update({
+  id: '/shows',
+  path: '/shows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EpisodesEpisodeIdRoute = EpisodesEpisodeIdRouteImport.update({
+  id: '/episodes/$episodeId',
+  path: '/episodes/$episodeId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShowsShowIdRoute = ShowsShowIdRouteImport.update({
   id: '/$showId',
   path: '/$showId',
   getParentRoute: () => ShowsRoute,
-} as any)
-const EpisodesEpisodeIdRoute = EpisodesEpisodeIdRouteImport.update({
-  id: '/episodes/$episodeId',
-  path: '/episodes/$episodeId',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksAutoPipelineRoute =
   ApiPublicHooksAutoPipelineRouteImport.update({
@@ -136,25 +136,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/submit': {
-      id: '/submit'
-      path: '/submit'
-      fullPath: '/submit'
-      preLoaderRoute: typeof SubmitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shows': {
-      id: '/shows'
-      path: '/shows'
-      fullPath: '/shows'
-      preLoaderRoute: typeof ShowsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schedule': {
-      id: '/schedule'
-      path: '/schedule'
-      fullPath: '/schedule'
-      preLoaderRoute: typeof ScheduleRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -164,11 +150,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/schedule': {
+      id: '/schedule'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof ScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shows': {
+      id: '/shows'
+      path: '/shows'
+      fullPath: '/shows'
+      preLoaderRoute: typeof ShowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/episodes/$episodeId': {
+      id: '/episodes/$episodeId'
+      path: '/episodes/$episodeId'
+      fullPath: '/episodes/$episodeId'
+      preLoaderRoute: typeof EpisodesEpisodeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shows/$showId': {
@@ -177,13 +184,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/shows/$showId'
       preLoaderRoute: typeof ShowsShowIdRouteImport
       parentRoute: typeof ShowsRoute
-    }
-    '/episodes/$episodeId': {
-      id: '/episodes/$episodeId'
-      path: '/episodes/$episodeId'
-      fullPath: '/episodes/$episodeId'
-      preLoaderRoute: typeof EpisodesEpisodeIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/auto-pipeline': {
       id: '/api/public/hooks/auto-pipeline'
