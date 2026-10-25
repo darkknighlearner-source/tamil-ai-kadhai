@@ -10,8 +10,12 @@ export const Route = createFileRoute("/shows")({
   component: ShowsPage,
   head: () => ({
     meta: [
-      { title: "All shows — Tamil AI Vanoli" },
-      { name: "description", content: "Browse every Tamil AI Vanoli channel — comedy, news, cinema, kids, motivation, and more." },
+      {"title": "All shows \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "Browse Tamil AI Vanoli channels for news, comedy, cinema, motivation, and stories."} ,
+      {"property": "og:title", "content": "All shows \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "Browse Tamil AI Vanoli channels for news, comedy, cinema, motivation, and stories."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
     ],
   }),
 });

@@ -13,12 +13,12 @@ export const Route = createFileRoute("/")({
   component: HomePage,
   head: () => ({
     meta: [
-      { title: "Tamil AI Vanoli — Live AI Tamil Radio" },
-      {
-        name: "description",
-        content:
-          "Listen to original AI-generated Tamil radio shows: morning news comedy, two-character comedy, cinema talk, hyper-local city updates and night stories.",
-      },
+      {"title": "Tamil AI Vanoli \u2014 Live AI Tamil Radio"} ,
+      {"name": "description", "content": "Listen to original AI-generated Tamil radio shows, city updates, comedy, cinema talk, and stories."} ,
+      {"property": "og:title", "content": "Tamil AI Vanoli \u2014 Live AI Tamil Radio"} ,
+      {"property": "og:description", "content": "Listen to original AI-generated Tamil radio shows, city updates, comedy, cinema talk, and stories."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
     ],
   }),
 });

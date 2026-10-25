@@ -8,6 +8,16 @@ import type { EpisodeWithShow, Show } from "@/lib/types";
 import { Radio } from "lucide-react";
 
 export const Route = createFileRoute("/shows/$showId")({
+  head: () => ({
+    meta: [
+      {"title": "Show episodes \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "Explore a Tamil AI Vanoli show and its published episodes."} ,
+      {"property": "og:title", "content": "Show episodes \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "Explore a Tamil AI Vanoli show and its published episodes."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
+    ],
+  }),
   component: ShowDetailPage,
   notFoundComponent: () => (
     <div className="min-h-screen bg-background">

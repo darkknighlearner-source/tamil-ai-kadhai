@@ -12,8 +12,12 @@ export const Route = createFileRoute("/schedule")({
   component: SchedulePage,
   head: () => ({
     meta: [
-      { title: "Daily schedule — Tamil AI Vanoli" },
-      { name: "description", content: "Daily Tamil AI Vanoli show timings — morning, afternoon, evening, and night." },
+      {"title": "Daily schedule \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "View daily Tamil AI Vanoli show timings for morning, afternoon, evening, and night."} ,
+      {"property": "og:title", "content": "Daily schedule \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "View daily Tamil AI Vanoli show timings for morning, afternoon, evening, and night."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
     ],
   }),
 });

@@ -8,6 +8,16 @@ import type { EpisodeWithShow, ScriptShape, SourceRef } from "@/lib/types";
 import { ExternalLink, MessageCircle, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/episodes/$episodeId")({
+  head: () => ({
+    meta: [
+      {"title": "Episode replay \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "Replay a Tamil AI Vanoli episode and read its original script and source references."} ,
+      {"property": "og:title", "content": "Episode replay \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "Replay a Tamil AI Vanoli episode and read its original script and source references."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
+    ],
+  }),
   component: EpisodeDetailPage,
   notFoundComponent: () => (
     <div className="min-h-screen bg-background">

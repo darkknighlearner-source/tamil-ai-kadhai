@@ -10,7 +10,16 @@ import { invokeFn } from "@/lib/fn";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
-  head: () => ({ meta: [{ title: "Admin — Tamil AI Vanoli" }] }),
+  head: () => ({
+    meta: [
+      {"title": "Admin \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "Manage Tamil AI Vanoli news sources, scripts, episodes, voices, and listener requests."} ,
+      {"property": "og:title", "content": "Admin \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "Manage Tamil AI Vanoli news sources, scripts, episodes, voices, and listener requests."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
+    ],
+  }),
 });
 
 type Tab = "overview" | "sources" | "news" | "generate" | "episodes" | "voices" | "requests";
