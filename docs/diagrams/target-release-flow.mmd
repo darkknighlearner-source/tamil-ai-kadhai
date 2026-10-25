@@ -1,0 +1,17 @@
+flowchart TD
+  A[Authenticated admin or trusted scheduler] --> B[Validate sources and approved domains]
+  B --> C[Collect short summaries and links]
+  C --> D[Deduplicate and verify source eligibility]
+  D --> E[Generate original Tamil script]
+  E --> F[Validate facts and source references]
+  F --> G{Sensitive or restricted content?}
+  G -->|Yes| H[Explicit admin approve or reject]
+  H -->|Reject| I[Rejected - never playable]
+  H -->|Approve| J[Approved draft]
+  G -->|No| J
+  J --> K[Queued Sarvam synthesis with retries]
+  K --> L[Decode and mix audio - validate output]
+  L --> M[Private audio until publish]
+  M --> N[Schedule for correct city and show]
+  N --> O[Publish only reviewed audio-ready episode]
+  O --> P[Listener playback with source links]
