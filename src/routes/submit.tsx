@@ -18,8 +18,12 @@ export const Route = createFileRoute("/submit")({
   component: SubmitPage,
   head: () => ({
     meta: [
-      { title: "Submit a topic — Tamil AI Vanoli" },
-      { name: "description", content: "Send your topic, question, or request to Tamil AI Vanoli." },
+      {"title": "Submit a topic \u2014 Tamil AI Vanoli"} ,
+      {"name": "description", "content": "Send a topic, question, or request to Tamil AI Vanoli."} ,
+      {"property": "og:title", "content": "Submit a topic \u2014 Tamil AI Vanoli"} ,
+      {"property": "og:description", "content": "Send a topic, question, or request to Tamil AI Vanoli."} ,
+      {"property": "og:type", "content": "website"} ,
+      {"name": "twitter:card", "content": "summary"} ,
     ],
   }),
 });
